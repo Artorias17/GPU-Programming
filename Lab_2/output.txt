@@ -1,0 +1,18 @@
+
+Setting up the problem...0.000302 s
+    Vector size = 10000
+Allocating device variables...0.153269 s
+Copying data from host to device...0.000808 s
+Launching kernel...0.000076 s
+Copying data from device to host...0.000055 s
+Verifying results...TEST PASSED
+
+
+Setting up the problem...0.019300 s
+    Vector size = 1000000
+Allocating device variables...0.155593 s
+Copying data from host to device...0.000815 s
+Launching kernel...0.000082 s
+Copying data from device to host...0.001655 s
+Verifying results...TEST PASSED
+

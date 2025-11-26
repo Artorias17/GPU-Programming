@@ -48,7 +48,10 @@ int main(int argc, char **argv) {
   fflush(stdout);
   startTime(&timer);
 
-  // INSERT CODE HERE
+  float *A_d, *B_d, *C_d;
+  cudaMalloc(&A_d, sizeof(float) * n);
+  cudaMalloc(&B_d, sizeof(float) * n);
+  cudaMalloc(&C_d, sizeof(float) * n);
 
   cudaDeviceSynchronize();
   stopTime(&timer);
@@ -60,7 +63,8 @@ int main(int argc, char **argv) {
   fflush(stdout);
   startTime(&timer);
 
-  // INSERT CODE HERE
+  cudaMemcpy(A_d, A_h, sizeof(float) * n, cudaMemcpyHostToDevice);
+  cudaMemcpy(B_d, B_h, sizeof(float) * n, cudaMemcpyHostToDevice);
 
   cudaDeviceSynchronize();
   stopTime(&timer);
@@ -72,7 +76,9 @@ int main(int argc, char **argv) {
   fflush(stdout);
   startTime(&timer);
 
-  // INSERT CODE HERE
+  int numberOfThreadsPerBlock = 256;
+  int numberOfBlocks = (n + numberOfThreadsPerBlock - 1) / numberOfThreadsPerBlock;
+  vecAddKernel<<<numberOfBlocks, numberOfThreadsPerBlock>>>(A_d, B_d, C_d, n);
 
   cuda_ret = cudaDeviceSynchronize();
   if (cuda_ret != cudaSuccess)
@@ -86,7 +92,7 @@ int main(int argc, char **argv) {
   fflush(stdout);
   startTime(&timer);
 
-  // INSERT CODE HERE
+  cudaMemcpy(C_h, C_d, sizeof(float) * n, cudaMemcpyDeviceToHost);
 
   cudaDeviceSynchronize();
   stopTime(&timer);
@@ -105,7 +111,9 @@ int main(int argc, char **argv) {
   free(B_h);
   free(C_h);
 
-  // INSERT CODE HERE
+  cudaFree(A_d);
+  cudaFree(B_d);
+  cudaFree(C_d);
 
   return 0;
 }
