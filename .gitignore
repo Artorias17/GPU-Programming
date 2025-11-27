@@ -43,3 +43,4 @@
 # Explicitly ignore executables
 Lab_1/device-query
 Lab_2/vecadd
+Lab_3.1/sgemm
