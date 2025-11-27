@@ -20,7 +20,6 @@ int main (int argc, char *argv[])
     size_t A_sz, B_sz, C_sz;
     unsigned matArow, matAcol;
     unsigned matBrow, matBcol;
-    dim3 dim_grid, dim_block;
 
     if (argc == 1) {
         matArow = 1000;
@@ -66,11 +65,9 @@ int main (int argc, char *argv[])
 
     //INSERT CODE HERE
 
-
-
-
-
-
+    cudaMalloc(&A_d, sizeof(float) * A_sz);
+    cudaMalloc(&B_d, sizeof(float) * B_sz);
+    cudaMalloc(&C_d, sizeof(float) * C_sz);
 
     cudaDeviceSynchronize();
     stopTime(&timer); printf("%f s\n", elapsedTime(timer));
@@ -82,10 +79,9 @@ int main (int argc, char *argv[])
 
     //INSERT CODE HERE
 
-
-
-
-
+    cudaMemcpy(A_d, A_h, sizeof(float) * A_sz, cudaMemcpyHostToDevice);
+    cudaMemcpy(B_d, B_h, sizeof(float) * B_sz, cudaMemcpyHostToDevice);
+    
     cudaDeviceSynchronize();
     stopTime(&timer); printf("%f s\n", elapsedTime(timer));
 
@@ -106,7 +102,7 @@ int main (int argc, char *argv[])
 
     //INSERT CODE HERE
 
-
+    cudaMemcpy(C_h, C_d, sizeof(float) * C_sz, cudaMemcpyDeviceToHost);
 
     cudaDeviceSynchronize();
     stopTime(&timer); printf("%f s\n", elapsedTime(timer));
@@ -126,8 +122,9 @@ int main (int argc, char *argv[])
 
     //INSERT CODE HERE
 
-
-
+    cudaFree(A_d);
+    cudaFree(B_d);
+    cudaFree(C_d);
 
     return 0;
 
