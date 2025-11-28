@@ -1,0 +1,21 @@
+1. How many times is each element of each input matrix loaded during the execution of the
+kernel?
+
+Because we aren't doing any memory optimizations, a kernel executed by a thread 
+loads k values from matrix A and k values from matrix B, where k is the intermediate 
+dimension between the matrices. But, across all threads, each element is loaded 
+n times for matrix A and m times for matrix B.
+
+2. What is the memory-access to floating-point computation ratio in each thread? Consider
+multiplication and addition as separate operations, and ignore the global memory store at the
+end. Only count global memory loads towards your off-chip bandwidth.
+
+The kernel essentially does 4 operations in repeat.
+2 loads for values of A and B matrices from global memory,
+2 FLOPS - 1 multiplication and 1 addition.
+The repeat is determined by the intermediate dimension k between the two matrices.
+
+So, a thread execution results in 2k memory loads and 2k FLOPS.
+This results in a ratio of 1:1 memory-access to floating-point computation.
+
+
