@@ -40,7 +40,17 @@
 # debug information files
 *.dwo
 
+# Compressed files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.bz2
+*.xz
+
 # Explicitly ignore executables
 Lab_1/device-query
 Lab_2/vecadd
 Lab_3.1/sgemm
+Lab_3.2/sgemm-tiled
