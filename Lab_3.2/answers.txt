@@ -1,0 +1,37 @@
+In your kernel implementation, how many threads can be simultaneously scheduled for
+execution on a V100 GPU? Use:
+nvcc --ptxas-options="-v" kernel.cu
+to see the resource usage of your kernel (although compilation will fail, it will only do so
+after compiling the kernel and displaying the relevant information). Show your work.
+
+Running command nvcc --ptxas-options="-v" kernel.cu -arch=sm_70
+produces the following output
+
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z7mysgemmiiiPKfS0_Pf' for 'sm_70'
+ptxas info    : Function properties for _Z7mysgemmiiiPKfS0_Pf
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 31 registers, 2048 bytes smem, 392 bytes cmem[0]
+/appl/spack/v017/install-tree////////////////////////////////////gcc-8.5.0/binutils-2.37-ed6z3n/bin/ld: /lib/../lib64/crt1.o: in function `_start':
+(.text+0x24): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+
+Based on google search and AI explanation of the last ptxax info
+The kernel uses 31 registers per thread, 2048 bytes of shared memory and 392 bytes of constant memory.
+
+Since our block size 16x16 = 256 threads per block
+
+V100 Specs
+Number of SMs: 80
+Registers per SM: 65536
+Max blocks per SM: 32
+Max threads per block: 1024
+Max threads per SM: 2048
+
+So, maximum blocks allowed based on the kernel block size = 2048 / 256 = 8 blocks.
+Simultaneous threads per SM = 8 * 256 = 2048 threads.
+Simultaneous register usage per SM = 2048 * 31 =  63488 registers.
+
+Simultaneous threads per V100 = 2048 * 80 = 163840 threads
+
+Thus, the kernel has full occupancy with V100, totalling 163840 simultaneous thread usage.
