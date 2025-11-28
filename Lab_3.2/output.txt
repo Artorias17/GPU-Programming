@@ -1,0 +1,49 @@
+
+
+Setting up the problem...0.020992 s
+    A: 1000 x 1000
+    B: 1000 x 1000
+    C: 1000 x 1000
+Allocating device variables...0.280840 s
+Copying data from host to device...0.001642 s
+Launching kernel...0.000682 s
+Copying data from device to host...0.001669 s
+Verifying results...TEST PASSED
+
+
+
+Setting up the problem...0.000304 s
+    A: 100 x 100
+    B: 100 x 100
+    C: 100 x 100
+Allocating device variables...0.142659 s
+Copying data from host to device...0.000067 s
+Launching kernel...0.000085 s
+Copying data from device to host...0.000052 s
+Verifying results...TEST PASSED
+
+
+
+Setting up the problem...0.009746 s
+    A: 537 x 679
+    B: 679 x 851
+    C: 537 x 851
+Allocating device variables...0.141060 s
+Copying data from host to device...0.000492 s
+Launching kernel...0.000271 s
+Copying data from device to host...0.001231 s
+Verifying results...TEST PASSED
+
+
+
+Setting up the problem...0.375736 s
+    A: 4859 x 6075
+    B: 6075 x 2310
+    C: 4859 x 2310
+Allocating device variables...0.145555 s
+Copying data from host to device...0.011585 s
+Launching kernel...0.040135 s
+Copying data from device to host...0.010054 s
+Verifying results...TEST PASSED
+
+
