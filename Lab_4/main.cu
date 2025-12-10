@@ -75,6 +75,8 @@ int main(int argc, char *argv[]) {
 
   /* Copy mask to device constant memory */
   // INSERT CODE HERE
+  
+  cudaMemcpyToSymbol(M_c, M_h.elements, sizeof(float)*FILTER_SIZE*FILTER_SIZE, cudaMemcpyHostToDevice);
 
   cudaDeviceSynchronize();
   stopTime(&timer);
@@ -86,6 +88,14 @@ int main(int argc, char *argv[]) {
   startTime(&timer);
 
   // INSERT CODE HERE
+
+  dim_block = dim3(BLOCK_SIZE, BLOCK_SIZE);
+  dim_grid = dim3(
+    (imageWidth + dim_block.x - 1) / dim_block.x,
+    (imageHeight + dim_block.y - 1) / dim_block.y
+  );
+
+  convolution<<<dim_grid, dim_block>>>(N_d, P_d);
 
   cuda_ret = cudaDeviceSynchronize();
   if (cuda_ret != cudaSuccess)
@@ -121,6 +131,7 @@ int main(int argc, char *argv[]) {
   freeMatrix(P_h);
   freeDeviceMatrix(N_d);
   freeDeviceMatrix(P_d);
+  cudaFree(M_c);
 
   return 0;
 }
