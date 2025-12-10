@@ -1,0 +1,57 @@
+Answer 1
+------------------------------------------------------------------
+For a 10 x 10 Matrix
+Setting up the problem...0.000008 s
+    Image: 10 x 10
+    Mask: 5 x 5
+Allocating device variables...2.158555 s
+Copying data from host to device...0.002326 s
+Launching kernel...0.004237 s
+Copying data from device to host...0.000125 s
+Verifying results...TEST PASSED
+
+For a 100 x 100 Matrix
+Setting up the problem...0.000102 s
+    Image: 100 x 100
+    Mask: 5 x 5
+Allocating device variables...2.293310 s
+Copying data from host to device...0.002482 s
+Launching kernel...0.004811 s
+Copying data from device to host...0.000167 s
+Verifying results...TEST PASSED
+
+For a 1000 x 1000 Matrix
+Setting up the problem...0.013389 s
+    Image: 1000 x 1000
+    Mask: 5 x 5
+Allocating device variables...2.276043 s
+Copying data from host to device...0.002661 s
+Launching kernel...0.005438 s
+Copying data from device to host...0.004796 s
+Verifying results...TEST PASSED
+
+We can define FLOPS as Total Floating-Point Operations / Kernel Execution Time
+Now, for the convolution with 5x5 filter matrix,
+the operations are as follows:
+An entry in the output Matrix = 25 multiplications + 25 summation (With the initial 0) = 50 operations
+So,
+for a 10x10 Matrix =  10 x 10 x 50 = 5000 operations = 5000 / 0.004237 = 1,180,080.25 FLOPS
+for a 100x100 Matrix = 100 x 100 x 50 =  500000 / 0.004811 = 103,954,262.11 FLOPS
+for a 1000x1000 Matrix = 1000 x 1000 x 50 = 50000000 operations = 50000000 / 0.005438 = 9,193,717,325.11 FLOPS
+
+
+For a 100x increase in Matrix entry, kernel time increases by 13% and FLOPS increase by 88x.
+
+Answer 2
+------------------------------------------------------------------
+Overhead = Device Allocation + H -> D Copy + D -> H Copy
+Overhead % = Overhead / (Overhead + Kernel Time) × 100%
+
+Again, looking at Answer 1
+| Matrix Size | Total Overhead | Kernel Time | Overhead % |
+| ----------- | -------------- | ----------- | ---------- |
+| 10×10       | 2.161 s        | 0.004237 s  | 99.80%     |
+| 100×100     | 2.296 s        | 0.004811 s  | 99.79%     |
+| 1000×1000   | 2.284 s        | 0.005438 s  | 99.76%     |
+
+So, it takes around 99.78% of the 
