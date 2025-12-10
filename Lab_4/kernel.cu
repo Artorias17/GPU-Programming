@@ -13,42 +13,64 @@ __global__ void convolution(Matrix N, Matrix P)
 
   // INSERT KERNEL CODE HERE
 
-  const unsigned int global_x = (blockDim.x * blockIdx.x) + threadIdx.x;
-  const unsigned int global_y = (blockDim.y * blockIdx.y) + threadIdx.y;
-
-  const unsigned int FILTER_RADIUS = FILTER_SIZE / 2;
-
   __shared__ float N_tile[BLOCK_SIZE][BLOCK_SIZE];
 
-  // Load tile to shared memory with zero padding
-  N_tile[threadIdx.y][threadIdx.x] = 0;
-  if (global_x < N.width && global_y < N.height)
+  int blockId_x = blockIdx.x;
+  int blockId_y = blockIdx.y;
+  int threadId_x = threadIdx.x;
+  int threadId_y = threadIdx.y;
+  int blockDim_x = blockDim.x;
+  int blockDim_y = blockDim.y;
+
+  int FILTER_RADIUS = FILTER_SIZE / 2;
+
+  // Input starting position for the tile (with padding)
+  int in_y_start = blockId_y * blockDim_y - FILTER_RADIUS;
+  int in_x_start = blockId_x * blockDim_x - FILTER_RADIUS;
+
+  // Load padded tile into shared memory
+  // Each thread loads multiple elements
+  for (int dy = 0; dy <= 1; dy++)
   {
-    N_tile[threadIdx.y][threadIdx.x] = N.elements[global_y * N.width + global_x];
+    for (int dx = 0; dx <= 1; dx++)
+    {
+      int shared_y = threadId_y + dy * TILE_SIZE;
+      int shared_x = threadId_x + dx * TILE_SIZE;
+
+      if (shared_y < BLOCK_SIZE && shared_x < BLOCK_SIZE)
+      {
+        int global_y = in_y_start + shared_y;
+        int global_x = in_x_start + shared_x;
+
+        N_tile[shared_y][shared_x] = 0;
+
+        if (global_y >= 0 && global_y < N.height &&
+            global_x >= 0 && global_x < N.width)
+        {
+          N_tile[shared_y][shared_x] = N.elements[global_y * N.width + global_x];
+        }
+      }
+    }
   }
 
   __syncthreads();
 
-  // Apply convolution only for valid output region
+  // Compute convolution for output pixels
+  int out_y = blockId_y * TILE_SIZE + threadId_y;
+  int out_x = blockId_x * TILE_SIZE + threadId_x;
 
-  if (global_x < P.width && global_y < P.height)
+  if (out_y < P.height && out_x < P.width)
   {
     float sum = 0;
     for (int fy = 0; fy < FILTER_SIZE; fy++)
     {
       for (int fx = 0; fx < FILTER_SIZE; fx++)
       {
-        // Get tile position for filter relative to the threadIdx 
-        int tile_x = threadIdx.x + fx - FILTER_RADIUS;
-        int tile_y = threadIdx.y + fy - FILTER_RADIUS;
-
-        if (tile_x >= 0 && tile_x < BLOCK_SIZE && tile_y >= 0 && tile_y < BLOCK_SIZE)
-        {
-          sum += M_c[fy][fx] * N_tile[tile_y][tile_x];
-        }
+        int shared_y = threadId_y + fy;
+        int shared_x = threadId_x + fx;
+        sum += M_c[fy][fx] * N_tile[shared_y][shared_x];
       }
     }
-
-    P.elements[global_y * P.width + global_x] = sum;
+    P.elements[out_y * P.width + out_x] = sum;
   }
 }
